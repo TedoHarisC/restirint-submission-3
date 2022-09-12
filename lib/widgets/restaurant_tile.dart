@@ -17,8 +17,9 @@ class RestaurantTile extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => DetailRestaurantPage(
+          PageRouteBuilder(
+            transitionDuration: const Duration(seconds: 1),
+            pageBuilder: (_, __, ___) => DetailRestaurantPage(
               dataRestaurant: dataRestaurant,
             ),
           ),
@@ -46,14 +47,17 @@ class RestaurantTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
         child: Row(
           children: [
-            Container(
-              width: 142,
-              height: 82,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(
-                  image: NetworkImage(dataRestaurant.pictureId),
-                  fit: BoxFit.cover,
+            Hero(
+              tag: dataRestaurant.pictureId,
+              child: Container(
+                width: 142,
+                height: 82,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  image: DecorationImage(
+                    image: NetworkImage(dataRestaurant.pictureId),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -67,6 +71,8 @@ class RestaurantTile extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: semiBold,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 1),
                 Row(

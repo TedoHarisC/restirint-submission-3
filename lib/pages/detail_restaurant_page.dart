@@ -61,13 +61,16 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
     }
 
     Widget backgroundImage() {
-      return Container(
-        width: double.infinity,
-        height: 436,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: NetworkImage(widget.dataRestaurant.pictureId),
+      return Hero(
+        tag: widget.dataRestaurant.pictureId,
+        child: Container(
+          width: double.infinity,
+          height: 436,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage(widget.dataRestaurant.pictureId),
+            ),
           ),
         ),
       );
@@ -180,7 +183,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                               ),
                               const SizedBox(height: 30),
                               Text(
-                                'Overview',
+                                'Deskripsi',
                                 style: blackTextStyle.copyWith(
                                   fontSize: 20,
                                   fontWeight: bold,
@@ -194,6 +197,8 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                                   fontWeight: light,
                                 ),
                                 textAlign: TextAlign.justify,
+                                maxLines: 4,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 30),
                               Row(

@@ -16,7 +16,7 @@ class SearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width - (defaultMargin * 2),
       height: 54,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
