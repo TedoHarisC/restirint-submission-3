@@ -36,7 +36,7 @@ TextStyle orangeTextStyle = GoogleFonts.nunito(
 );
 
 TextStyle greyTextStyle = GoogleFonts.nunito(
-  color: kOrangeColor,
+  color: kGreyColor,
 );
 
 TextStyle blackTextStyle = GoogleFonts.nunito(
