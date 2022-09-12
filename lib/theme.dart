@@ -11,6 +11,8 @@ Color kWhiteColor = const Color(0xffFFFFFF);
 Color kGreenColor = const Color(0xff24C690);
 Color kRedColor = const Color(0xffFF576B);
 
+Color kBackgroundColor = const Color(0xffF0EDED);
+
 FontWeight light = FontWeight.w300;
 FontWeight regular = FontWeight.w400;
 FontWeight medium = FontWeight.w500;
@@ -19,6 +21,7 @@ FontWeight bold = FontWeight.w700;
 
 double defaultMargin = 20.0;
 double halfMargin = defaultMargin / 2;
+double defaultBorderRadius = 16;
 
 TextStyle primaryTextStyle = GoogleFonts.nunito(
   color: kPrimaryColor,
