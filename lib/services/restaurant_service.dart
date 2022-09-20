@@ -52,6 +52,7 @@ class RestaurantService {
 
   Future<ResponseCustomerReview> addReview(CustomerReview review) async {
     var reviewData = jsonEncode(review.toJson());
+
     try {
       final response = await http.post(
         Uri.parse("${baseAPIUrl}review"),
@@ -60,7 +61,8 @@ class RestaurantService {
           "Content-Type": "application/json",
         },
       );
-      if (response.statusCode == 200) {
+
+      if (response.statusCode == 201) {
         return ResponseCustomerReview.fromJson(
           json.decode(response.body),
         );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:restirint/model/customer_review.dart';
 import 'package:restirint/providers/restaurant_provider.dart';
 import 'package:restirint/theme.dart';
@@ -7,9 +6,12 @@ import 'package:restirint/widgets/general_button.dart';
 
 class FormTambahReview extends StatefulWidget {
   final String idRestaurant;
+  final RestaurantsProvider provider;
+
   const FormTambahReview({
     super.key,
     required this.idRestaurant,
+    required this.provider,
   });
 
   @override
@@ -17,8 +19,8 @@ class FormTambahReview extends StatefulWidget {
 }
 
 class _FormTambahReviewState extends State<FormTambahReview> {
-  final TextEditingController namaController = TextEditingController(text: '');
-  final TextEditingController reviewController =
+  final TextEditingController _namaController = TextEditingController(text: '');
+  final TextEditingController _reviewController =
       TextEditingController(text: '');
 
   @override
@@ -62,7 +64,7 @@ class _FormTambahReviewState extends State<FormTambahReview> {
             ],
           ),
           child: TextFormField(
-            controller: namaController,
+            controller: _namaController,
             decoration: InputDecoration.collapsed(
               hintText: 'Nama Anda',
               hintStyle: greyTextStyle.copyWith(
@@ -90,7 +92,7 @@ class _FormTambahReviewState extends State<FormTambahReview> {
             ],
           ),
           child: TextFormField(
-            controller: reviewController,
+            controller: _reviewController,
             decoration: InputDecoration.collapsed(
               hintText: 'Tuliskan Review',
               hintStyle: greyTextStyle.copyWith(
@@ -103,17 +105,15 @@ class _FormTambahReviewState extends State<FormTambahReview> {
       }
 
       Widget submitButton() {
-        CustomerReview customerReview = CustomerReview(
-          id: widget.idRestaurant,
-          name: namaController.text,
-          review: reviewController.text,
-        );
-
         return GestureDetector(
           onTap: () {
-            Provider.of<RestaurantsProvider>(context, listen: false)
-                .postReview(customerReview)
-                .then((value) {
+            CustomerReview customerReview = CustomerReview(
+              id: widget.idRestaurant,
+              name: _namaController.text,
+              review: _reviewController.text,
+            );
+
+            widget.provider.postReview(customerReview).then((value) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   backgroundColor: kGreenColor,

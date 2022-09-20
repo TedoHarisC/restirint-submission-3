@@ -46,8 +46,7 @@ class RestaurantsProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message =
-          "Ups, Koneksi kamu terputus nih. Silahkan pastikan kalian konek dengan internet dan lakukan reload aplikasi ya";
+      return _message = e.toString();
     }
   }
 
@@ -82,8 +81,7 @@ class RestaurantsProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message =
-          "Ups, Koneksi kamu terputus nih. Silahkan pastikan kalian konek dengan internet dan lakukan reload aplikasi ya";
+      return _message = e.toString();
     }
   }
 

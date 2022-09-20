@@ -94,7 +94,8 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
       );
     }
 
-    Widget content(DetailRestaurant dataDetailRestaurant) {
+    Widget content(
+        DetailRestaurant dataDetailRestaurant, RestaurantsProvider provider) {
       return SizedBox.expand(
         child: DraggableScrollableSheet(
             initialChildSize: 0.6,
@@ -293,8 +294,10 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               FormTambahReview(
-                                                  idRestaurant:
-                                                      dataDetailRestaurant.id),
+                                            idRestaurant:
+                                                dataDetailRestaurant.id,
+                                            provider: provider,
+                                          ),
                                         ),
                                       );
                                     },
@@ -363,7 +366,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                 child: CircularProgressIndicator(),
               );
             } else if (value.state == ResultState.hasData) {
-              return content(value.restaurant.restaurant);
+              return content(value.restaurant.restaurant, value);
             } else if (value.state == ResultState.noData) {
               return Center(
                 child: Text(
