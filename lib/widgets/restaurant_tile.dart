@@ -49,15 +49,24 @@ class RestaurantTile extends StatelessWidget {
           children: [
             Hero(
               tag: dataRestaurant.pictureId,
-              child: Container(
+              child: SizedBox(
                 width: 142,
                 height: 82,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: NetworkImage(dataRestaurant.pictureId),
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.network(
+                  dataRestaurant.getSmallResolutionPicture(),
+                  fit: BoxFit.cover,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

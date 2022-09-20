@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restirint/model/local_restaurant.dart';
+import 'package:restirint/providers/restaurant_provider.dart';
+import 'package:restirint/providers/search_restaurant_provider.dart';
+import 'package:restirint/services/restaurant_service.dart';
 import 'package:restirint/theme.dart';
 import 'package:restirint/widgets/restaurant_tile.dart';
 import 'package:restirint/widgets/search_tile.dart';
@@ -14,49 +18,167 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final searchController = TextEditingController(text: '');
+  Widget listRestaurantStream = Container();
 
   List<LocalRestaurant> _foundRequests = [];
 
-  Future<void> setAllDataRestaurant() async {
-    var result = await DefaultAssetBundle.of(context)
-        .loadString('assets/local_restaurant.json');
-
-    final List<LocalRestaurant> restaurants = parseRestaurants(result);
-
-    setState(() {
-      _foundRequests = restaurants;
-    });
+  Widget placeholderWhenLoading() {
+    return Column(
+      children: const [
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+      ],
+    );
   }
 
-  void _runFilterRequest(
-    String enteredKeyword,
-    List<LocalRestaurant> all,
-  ) {
-    List<LocalRestaurant> results = [];
-    if (enteredKeyword.isEmpty) {
-      results = all;
-    } else {
-      results = all
-          .where((request) => (request.name)
-              .toLowerCase()
-              .startsWith(enteredKeyword.toLowerCase()))
-          .toList();
-    }
+  Widget listAllRestaurantStream() {
+    return ChangeNotifierProvider(
+      create: (_) => RestaurantsProvider(restaurantService: RestaurantService())
+          .getAllRestaurant(),
+      child: Consumer<RestaurantsProvider>(
+        builder: (context, state, _) {
+          if (state.state == ResultState.loading) {
+            return placeholderWhenLoading();
+          } else if (state.state == ResultState.hasData) {
+            List<LocalRestaurant> result = state.restaurants.restaurants;
 
-    setState(() {
-      _foundRequests = results;
-    });
+            _foundRequests = result;
+            return Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: _foundRequests.length,
+                itemBuilder: (context, index) {
+                  return RestaurantTile(dataRestaurant: _foundRequests[index]);
+                },
+              ),
+            );
+          } else if (state.state == ResultState.error) {
+            return Center(
+              child: Text(
+                state.message,
+                style: blackTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: semiBold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(
+                'Belum ada data restaurant yang tersedia',
+                style: blackTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: semiBold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget listSearchRestaurantStream(String enteredKeyword) {
+    return ChangeNotifierProvider(
+      create: (_) =>
+          SearchRestaurantsProvider(restaurantService: RestaurantService())
+              .searchRestaurant(enteredKeyword),
+      child: Consumer<SearchRestaurantsProvider>(
+        builder: (context, state, _) {
+          if (state.state == SearchResultState.loading) {
+            return placeholderWhenLoading();
+          } else if (state.state == SearchResultState.hasData) {
+            if (state.searchResultRestaurant.founded == 0) {
+              return Center(
+                child: Text(
+                  'Belum ada data restaurant yang tersedia',
+                  style: blackTextStyle.copyWith(
+                    fontSize: 12,
+                    fontWeight: semiBold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else {
+              List<LocalRestaurant> resultSearch =
+                  state.searchResultRestaurant.restaurants;
+
+              _foundRequests = resultSearch;
+
+              return Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: _foundRequests.length,
+                  itemBuilder: (context, index) {
+                    return RestaurantTile(
+                        dataRestaurant: _foundRequests[index]);
+                  },
+                ),
+              );
+            }
+          } else if (state.state == SearchResultState.error) {
+            return Center(
+              child: Text(
+                state.message,
+                style: blackTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: semiBold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else if (state.state == SearchResultState.noData) {
+            return Center(
+              child: Text(
+                'Belum ada data restaurant yang tersedia',
+                style: blackTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: semiBold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(
+                'Belum ada data restaurant yang tersedia',
+                style: blackTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: semiBold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    setAllDataRestaurant();
+
+    listRestaurantStream = listAllRestaurantStream();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget headerContent(List<LocalRestaurant> restaurants) {
+    Widget headerContent() {
       return Container(
         margin: EdgeInsets.symmetric(horizontal: defaultMargin),
         child: Column(
@@ -104,7 +226,16 @@ class _HomePageState extends State<HomePage> {
               searchController: searchController,
               hint: 'Cari Nama Restaurant Favorit mu',
               onChange: (value) {
-                _runFilterRequest(value, restaurants);
+                setState(() {
+                  searchController.text = value;
+                });
+
+                if (searchController.text.isNotEmpty) {
+                  listRestaurantStream =
+                      listSearchRestaurantStream(searchController.text);
+                } else {
+                  listRestaurantStream = listAllRestaurantStream();
+                }
               },
             ),
             const SizedBox(height: 30),
@@ -113,105 +244,34 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    Widget placeholderWhenLoading() {
-      return Column(
-        children: const [
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-        ],
-      );
-    }
-
     Widget content() {
-      return FutureBuilder(
-        future: DefaultAssetBundle.of(context)
-            .loadString('assets/local_restaurant.json'),
-        builder: (context, snapshot) {
-          final List<LocalRestaurant> restaurants =
-              parseRestaurants(snapshot.data);
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            return RefreshIndicator(
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 30,
-                  ),
-                  child: Column(
-                    children: [
-                      headerContent(restaurants),
-                      Expanded(
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: _foundRequests.length,
-                          itemBuilder: (context, index) {
-                            return (_foundRequests.isNotEmpty)
-                                ? RestaurantTile(
-                                    dataRestaurant: _foundRequests[index])
-                                : Center(
-                                    child: Text(
-                                      'Belum ada data restaurant yang tersedia',
-                                      style: blackTextStyle.copyWith(
-                                        fontSize: 12,
-                                        fontWeight: semiBold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
+      return RefreshIndicator(
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 2,
+            padding: EdgeInsets.all(halfMargin),
+            child: Column(
+              children: [
+                headerContent(),
+                listRestaurantStream,
+              ],
+            ),
+          ),
+        ),
+        onRefresh: () {
+          return Future.delayed(
+            const Duration(seconds: 3),
+            () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: kGreenColor,
+                  content: const Text('Yeay data berhasil diperbarui.'),
                 ),
-              ),
-              onRefresh: () {
-                return Future.delayed(
-                  const Duration(seconds: 3),
-                  () {
-                    setAllDataRestaurant();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: kGreenColor,
-                        content: const Text('Yeay data berhasil diperbarui.'),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          } else {
-            return SingleChildScrollView(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.symmetric(
-                  vertical: 30,
-                ),
-                child: Column(
-                  children: [
-                    headerContent(restaurants),
-                    placeholderWhenLoading(),
-                  ],
-                ),
-              ),
-            );
-          }
+              );
+            },
+          );
         },
       );
     }

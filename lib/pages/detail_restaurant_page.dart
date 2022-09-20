@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:restirint/model/detail_restaurant.dart';
 import 'package:restirint/model/local_restaurant.dart';
+import 'package:restirint/pages/form_tambah_review.dart';
+import 'package:restirint/providers/restaurant_provider.dart';
+import 'package:restirint/services/restaurant_service.dart';
 import 'package:restirint/theme.dart';
 import 'package:restirint/widgets/menu_list.dart';
+import 'package:restirint/widgets/review_tile.dart';
 
 class DetailRestaurantPage extends StatefulWidget {
   final LocalRestaurant dataRestaurant;
@@ -20,6 +26,8 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
 
   @override
   Widget build(BuildContext context) {
+    RestaurantsProvider provider;
+
     Widget backButton() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,20 +71,30 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
     Widget backgroundImage() {
       return Hero(
         tag: widget.dataRestaurant.pictureId,
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           height: 436,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(widget.dataRestaurant.pictureId),
-            ),
+          child: Image.network(
+            widget.dataRestaurant.getLargeResolutionPicture(),
+            fit: BoxFit.cover,
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent? loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            },
           ),
         ),
       );
     }
 
-    Widget content() {
+    Widget content(DetailRestaurant dataDetailRestaurant) {
       return SizedBox.expand(
         child: DraggableScrollableSheet(
             initialChildSize: 0.6,
@@ -134,7 +152,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                               ),
                               const SizedBox(height: 30),
                               Text(
-                                widget.dataRestaurant.name,
+                                dataDetailRestaurant.name,
                                 style: blackTextStyle.copyWith(
                                   fontSize: 20,
                                   fontWeight: bold,
@@ -154,7 +172,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        widget.dataRestaurant.city,
+                                        dataDetailRestaurant.city,
                                         style: greyTextStyle.copyWith(
                                           fontSize: 14,
                                           fontWeight: semiBold,
@@ -171,7 +189,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        widget.dataRestaurant.rating.toString(),
+                                        dataDetailRestaurant.rating.toString(),
                                         style: greyTextStyle.copyWith(
                                           fontSize: 18,
                                           fontWeight: semiBold,
@@ -191,7 +209,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                               ),
                               SizedBox(height: halfMargin),
                               Text(
-                                widget.dataRestaurant.description,
+                                dataDetailRestaurant.description,
                                 style: blackTextStyle.copyWith(
                                   fontSize: 14,
                                   fontWeight: light,
@@ -223,7 +241,7 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                               ),
                               SizedBox(height: defaultMargin),
                               Column(
-                                children: widget.dataRestaurant.menus.foods
+                                children: dataDetailRestaurant.menus!.foods
                                     .map((item) {
                                   return MenuList(name: item.name);
                                 }).toList(),
@@ -251,11 +269,71 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
                               ),
                               SizedBox(height: defaultMargin),
                               Column(
-                                children: widget.dataRestaurant.menus.drinks
+                                children: dataDetailRestaurant.menus!.drinks
                                     .map((item) {
                                   return MenuList(name: item.name);
                                 }).toList(),
-                              )
+                              ),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Review Costumer',
+                                    style: blackTextStyle.copyWith(
+                                      fontSize: 20,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FormTambahReview(
+                                                  idRestaurant:
+                                                      dataDetailRestaurant.id),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Tambah Review',
+                                      style: greyTextStyle.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: semiBold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: defaultMargin),
+                              (dataDetailRestaurant.customerReviews != null)
+                                  ? Column(
+                                      children: dataDetailRestaurant
+                                          .customerReviews!
+                                          .map((item) {
+                                        //return MenuList(name: item.name);
+                                        return RevewTile(dataReview: item);
+                                      }).toList(),
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            'Belum ada review tersedia, Jadilah yang pertama untuk menilai resto ini',
+                                            style: blackTextStyle.copyWith(
+                                              fontSize: 12,
+                                              fontWeight: semiBold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        )
+                                      ],
+                                    ),
                             ],
                           ),
                         ),
@@ -274,7 +352,50 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
         children: [
           backgroundImage(),
           backButton(),
-          content(),
+          ChangeNotifierProvider(create: (_) {
+            provider =
+                RestaurantsProvider(restaurantService: RestaurantService());
+            return provider.getDetailRestaurant(widget.dataRestaurant.id);
+          }, child:
+              Consumer<RestaurantsProvider>(builder: ((context, value, _) {
+            if (value.state == ResultState.loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (value.state == ResultState.hasData) {
+              return content(value.restaurant.restaurant);
+            } else if (value.state == ResultState.noData) {
+              return Center(
+                child: Text(
+                  value.message,
+                  style: blackTextStyle.copyWith(
+                    fontSize: 16,
+                    fontWeight: semiBold,
+                  ),
+                ),
+              );
+            } else if (value.state == ResultState.error) {
+              return Center(
+                child: Text(
+                  value.message,
+                  style: blackTextStyle.copyWith(
+                    fontSize: 16,
+                    fontWeight: semiBold,
+                  ),
+                ),
+              );
+            } else {
+              return Center(
+                child: Text(
+                  'Tidak ada data yang bisa ditampilkan',
+                  style: blackTextStyle.copyWith(
+                    fontSize: 16,
+                    fontWeight: semiBold,
+                  ),
+                ),
+              );
+            }
+          }))),
         ],
       ),
     );

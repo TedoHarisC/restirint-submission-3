@@ -51,7 +51,7 @@ class SearchTile extends StatelessWidget {
                   fontWeight: medium,
                 ),
               ),
-              onChanged: onChange,
+              onFieldSubmitted: onChange,
             ),
           ),
         ],
