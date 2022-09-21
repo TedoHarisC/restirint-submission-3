@@ -351,56 +351,67 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
 
     return Scaffold(
       backgroundColor: kWhiteColor,
-      body: Stack(
-        children: [
-          backgroundImage(),
-          backButton(),
-          ChangeNotifierProvider(create: (_) {
-            provider =
-                RestaurantsProvider(restaurantService: RestaurantService());
-            return provider.getDetailRestaurant(widget.dataRestaurant.id);
-          }, child:
-              Consumer<RestaurantsProvider>(builder: ((context, value, _) {
-            if (value.state == ResultState.loading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (value.state == ResultState.hasData) {
-              return content(value.restaurant.restaurant, value);
-            } else if (value.state == ResultState.noData) {
-              return Center(
+      body: ChangeNotifierProvider(create: (_) {
+        provider = RestaurantsProvider(restaurantService: RestaurantService());
+        return provider.getDetailRestaurant(widget.dataRestaurant.id);
+      }, child: Consumer<RestaurantsProvider>(builder: ((context, value, _) {
+        if (value.state == ResultState.loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (value.state == ResultState.hasData) {
+          return Stack(children: [
+            backgroundImage(),
+            backButton(),
+            content(value.restaurant.restaurant, value),
+          ]);
+        } else if (value.state == ResultState.noData) {
+          return Center(
+            child: Text(
+              value.message,
+              style: blackTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: semiBold,
+              ),
+            ),
+          );
+        } else if (value.state == ResultState.error) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Image.asset(
+                  'assets/img_no_connection.png',
+                  width: 299,
+                  height: 299,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
                 child: Text(
                   value.message,
                   style: blackTextStyle.copyWith(
                     fontSize: 16,
                     fontWeight: semiBold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              );
-            } else if (value.state == ResultState.error) {
-              return Center(
-                child: Text(
-                  value.message,
-                  style: blackTextStyle.copyWith(
-                    fontSize: 16,
-                    fontWeight: semiBold,
-                  ),
-                ),
-              );
-            } else {
-              return Center(
-                child: Text(
-                  'Tidak ada data yang bisa ditampilkan',
-                  style: blackTextStyle.copyWith(
-                    fontSize: 16,
-                    fontWeight: semiBold,
-                  ),
-                ),
-              );
-            }
-          }))),
-        ],
-      ),
+              ),
+            ],
+          );
+        } else {
+          return Center(
+            child: Text(
+              'Tidak ada data yang bisa ditampilkan',
+              style: blackTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: semiBold,
+              ),
+            ),
+          );
+        }
+      }))),
     );
   }
 }

@@ -64,15 +64,27 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           } else if (state.state == ResultState.error) {
-            return Center(
-              child: Text(
-                state.message,
-                style: blackTextStyle.copyWith(
-                  fontSize: 12,
-                  fontWeight: semiBold,
+            return Column(
+              children: [
+                Center(
+                  child: Image.asset(
+                    'assets/img_no_connection.png',
+                    width: 299,
+                    height: 299,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    state.message,
+                    style: blackTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: semiBold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             );
           } else {
             return Center(
@@ -102,15 +114,21 @@ class _HomePageState extends State<HomePage> {
             return placeholderWhenLoading();
           } else if (state.state == SearchResultState.hasData) {
             if (state.searchResultRestaurant.founded == 0) {
-              return Center(
-                child: Text(
-                  'Belum ada data restaurant yang tersedia',
-                  style: blackTextStyle.copyWith(
-                    fontSize: 12,
-                    fontWeight: semiBold,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Text(
+                      'Belum ada data restaurant yang tersedia',
+                      style: blackTextStyle.copyWith(
+                        fontSize: 14,
+                        fontWeight: semiBold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                ),
+                ],
               );
             } else {
               List<LocalRestaurant> resultSearch =
