@@ -198,6 +198,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Widget headerContent() {
       return Container(
+        width: MediaQuery.of(context).size.width - (2 * defaultMargin),
         margin: EdgeInsets.symmetric(horizontal: defaultMargin),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,6 +232,8 @@ class _HomePageState extends State<HomePage> {
                 fontSize: 20,
                 fontWeight: semiBold,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
               'Just for you !',
@@ -238,6 +241,8 @@ class _HomePageState extends State<HomePage> {
                 fontSize: 20,
                 fontWeight: bold,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 30),
             SearchTile(

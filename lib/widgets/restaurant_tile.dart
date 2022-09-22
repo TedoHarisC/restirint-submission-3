@@ -71,53 +71,59 @@ class RestaurantTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  dataRestaurant.name,
-                  style: blackTextStyle.copyWith(
-                    fontSize: 14,
-                    fontWeight: semiBold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dataRestaurant.name,
+                    style: blackTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: semiBold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 1),
-                Row(
-                  children: [
-                    Image.asset(
-                      'assets/icon_location.png',
-                      width: 10,
-                      height: 10,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      dataRestaurant.city,
-                      style: greyTextStyle.copyWith(
-                        fontSize: 14,
+                  const SizedBox(height: 1),
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/icon_location.png',
+                        width: 10,
+                        height: 10,
                       ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Row(
-                  children: [
-                    Image.asset(
-                      'assets/icon_star.png',
-                      width: 10,
-                      height: 10,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      dataRestaurant.rating.toString(),
-                      style: greyTextStyle.copyWith(
-                        fontSize: 14,
+                      const SizedBox(width: 5),
+                      Text(
+                        dataRestaurant.city,
+                        style: greyTextStyle.copyWith(
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/icon_star.png',
+                        width: 10,
+                        height: 10,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        dataRestaurant.rating.toString(),
+                        style: greyTextStyle.copyWith(
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

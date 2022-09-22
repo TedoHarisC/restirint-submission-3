@@ -42,7 +42,8 @@ class ListSkeletonItem extends StatelessWidget {
                 baseColor: kBackgroundColor,
                 highlightColor: kGreyColor,
                 child: Container(
-                  width: 160,
+                  width: MediaQuery.of(context).size.width -
+                      (142 + (2 * defaultMargin) + 36),
                   height: 14,
                   color: kBackgroundColor,
                 ),
