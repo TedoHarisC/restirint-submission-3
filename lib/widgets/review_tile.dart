@@ -42,25 +42,31 @@ class RevewTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 7),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    dataReview.name,
-                    style: blackTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: semiBold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dataReview.name,
+                      style: blackTextStyle.copyWith(
+                        fontSize: 14,
+                        fontWeight: semiBold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    dataReview.date ?? '',
-                    style: greyTextStyle.copyWith(
-                      fontSize: 10,
-                      fontWeight: semiBold,
+                    const SizedBox(width: 2),
+                    Text(
+                      dataReview.date ?? '',
+                      style: greyTextStyle.copyWith(
+                        fontSize: 10,
+                        fontWeight: semiBold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

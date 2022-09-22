@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restirint/model/local_restaurant.dart';
 import 'package:restirint/providers/restaurant_provider.dart';
-import 'package:restirint/providers/search_restaurant_provider.dart';
 import 'package:restirint/services/restaurant_service.dart';
 import 'package:restirint/theme.dart';
 import 'package:restirint/widgets/restaurant_tile.dart';
@@ -19,8 +18,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final searchController = TextEditingController(text: '');
   Widget listRestaurantStream = Container();
-
-  List<LocalRestaurant> _foundRequests = [];
 
   Widget placeholderWhenLoading() {
     return Column(
@@ -41,114 +38,101 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget listSearchRestaurantStream(String query) {
+    return Consumer<RestaurantsProvider>(
+      builder: (context, state, _) {
+        if (state.state == ResultState.loading) {
+          return placeholderWhenLoading();
+        } else if (state.state == ResultState.hasData) {
+          if (query == "") {
+            List<LocalRestaurant> result = state.restaurants.restaurants;
+
+            return Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: result.length,
+                itemBuilder: (context, index) {
+                  return RestaurantTile(dataRestaurant: result[index]);
+                },
+              ),
+            );
+          } else {
+            List<LocalRestaurant> resultSearch =
+                state.searchResultRestaurant.restaurants;
+
+            return Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: resultSearch.length,
+                itemBuilder: (context, index) {
+                  return RestaurantTile(dataRestaurant: resultSearch[index]);
+                },
+              ),
+            );
+          }
+        } else if (state.state == ResultState.error) {
+          return Column(
+            children: [
+              Center(
+                child: Image.asset(
+                  'assets/img_no_connection.png',
+                  width: 299,
+                  height: 299,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  state.message,
+                  style: blackTextStyle.copyWith(
+                    fontSize: 14,
+                    fontWeight: semiBold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Center(
+            child: Text(
+              'Belum ada data restaurant yang tersedia',
+              style: blackTextStyle.copyWith(
+                fontSize: 12,
+                fontWeight: semiBold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+      },
+    );
+  }
+
   Widget listAllRestaurantStream() {
     return ChangeNotifierProvider(
       create: (_) => RestaurantsProvider(restaurantService: RestaurantService())
-          .getAllRestaurant(),
+          .getAllRestaurant(""),
       child: Consumer<RestaurantsProvider>(
         builder: (context, state, _) {
           if (state.state == ResultState.loading) {
             return placeholderWhenLoading();
           } else if (state.state == ResultState.hasData) {
-            List<LocalRestaurant> result = state.restaurants.restaurants;
+            List<LocalRestaurant> resultSearch = state.restaurants.restaurants;
 
-            _foundRequests = result;
             return Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: _foundRequests.length,
+                itemCount: resultSearch.length,
                 itemBuilder: (context, index) {
-                  return RestaurantTile(dataRestaurant: _foundRequests[index]);
+                  return RestaurantTile(dataRestaurant: resultSearch[index]);
                 },
               ),
             );
           } else if (state.state == ResultState.error) {
-            return Column(
-              children: [
-                Center(
-                  child: Image.asset(
-                    'assets/img_no_connection.png',
-                    width: 299,
-                    height: 299,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: Text(
-                    state.message,
-                    style: blackTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: semiBold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return Center(
-              child: Text(
-                'Belum ada data restaurant yang tersedia',
-                style: blackTextStyle.copyWith(
-                  fontSize: 12,
-                  fontWeight: semiBold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget listSearchRestaurantStream(String enteredKeyword) {
-    return ChangeNotifierProvider(
-      create: (_) =>
-          SearchRestaurantsProvider(restaurantService: RestaurantService())
-              .searchRestaurant(enteredKeyword),
-      child: Consumer<SearchRestaurantsProvider>(
-        builder: (context, state, _) {
-          if (state.state == SearchResultState.loading) {
-            return placeholderWhenLoading();
-          } else if (state.state == SearchResultState.hasData) {
-            if (state.searchResultRestaurant.founded == 0) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Text(
-                      'Belum ada data restaurant yang tersedia',
-                      style: blackTextStyle.copyWith(
-                        fontSize: 14,
-                        fontWeight: semiBold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              List<LocalRestaurant> resultSearch =
-                  state.searchResultRestaurant.restaurants;
-
-              _foundRequests = resultSearch;
-
-              return Expanded(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: _foundRequests.length,
-                  itemBuilder: (context, index) {
-                    return RestaurantTile(
-                        dataRestaurant: _foundRequests[index]);
-                  },
-                ),
-              );
-            }
-          } else if (state.state == SearchResultState.error) {
             return Center(
               child: Text(
                 state.message,
@@ -159,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                 textAlign: TextAlign.center,
               ),
             );
-          } else if (state.state == SearchResultState.noData) {
+          } else if (state.state == ResultState.noData) {
             return Center(
               child: Text(
                 'Belum ada data restaurant yang tersedia',
@@ -250,15 +234,11 @@ class _HomePageState extends State<HomePage> {
               hint: 'Cari Nama Restaurant Favorit mu',
               onChange: (value) {
                 setState(() {
-                  searchController.text = value;
-                });
+                  Provider.of<RestaurantsProvider>(context, listen: false)
+                      .getAllRestaurant(value);
 
-                if (searchController.text.isNotEmpty) {
-                  listRestaurantStream =
-                      listSearchRestaurantStream(searchController.text);
-                } else {
-                  listRestaurantStream = listAllRestaurantStream();
-                }
+                  listRestaurantStream = listSearchRestaurantStream(value);
+                });
               },
             ),
             const SizedBox(height: 30),

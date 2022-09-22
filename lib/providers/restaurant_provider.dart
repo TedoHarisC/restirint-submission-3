@@ -15,6 +15,7 @@ class RestaurantsProvider extends ChangeNotifier {
 
   ResponseLocalRestaurant? _dataRestaurant;
   late ResponseLocalRestaurantDetail _dataDetailRestaurant;
+  ResponseSearchLocalRestaurant? _dataSearchRestaurant;
   late ResultState _state;
   String _message = "";
 
@@ -26,22 +27,41 @@ class RestaurantsProvider extends ChangeNotifier {
           message: '',
           count: 0,
           restaurants: <LocalRestaurant>[].toList());
+  ResponseSearchLocalRestaurant get searchResultRestaurant =>
+      _dataSearchRestaurant ??
+      ResponseSearchLocalRestaurant(
+          error: false, founded: 0, restaurants: <LocalRestaurant>[].toList());
   ResponseLocalRestaurantDetail get restaurant => _dataDetailRestaurant;
   ResultState get state => _state;
 
-  Future _fetchAllRestaurant() async {
+  Future _fetchAllRestaurant({String query = ''}) async {
     try {
       _state = ResultState.loading;
       notifyListeners();
-      final response = await restaurantService.getRestaurantList();
-      if (response.restaurants.isEmpty) {
-        _state = ResultState.noData;
-        notifyListeners();
-        return _message = 'No data';
+
+      if (query.isEmpty || query == "") {
+        final response = await restaurantService.getRestaurantList();
+        if (response.restaurants.isEmpty) {
+          _state = ResultState.noData;
+          notifyListeners();
+          return _message = 'No data';
+        } else {
+          _state = ResultState.hasData;
+          notifyListeners();
+          return _dataRestaurant = response;
+        }
       } else {
-        _state = ResultState.hasData;
-        notifyListeners();
-        return _dataRestaurant = response;
+        final response = await restaurantService.searchRestaurant(query);
+
+        if (response.restaurants.isEmpty) {
+          _state = ResultState.noData;
+          notifyListeners();
+          return _message = 'No data';
+        } else {
+          _state = ResultState.hasData;
+          notifyListeners();
+          return _dataSearchRestaurant = response;
+        }
       }
     } catch (e) {
       _state = ResultState.error;
@@ -87,8 +107,8 @@ class RestaurantsProvider extends ChangeNotifier {
     }
   }
 
-  RestaurantsProvider getAllRestaurant() {
-    _fetchAllRestaurant();
+  RestaurantsProvider getAllRestaurant(String query) {
+    _fetchAllRestaurant(query: query);
     return this;
   }
 

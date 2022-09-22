@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:restirint/pages/home_page.dart';
 import 'package:restirint/pages/splash_page.dart';
 import 'package:restirint/providers/restaurant_provider.dart';
-import 'package:restirint/providers/search_restaurant_provider.dart';
 import 'package:restirint/services/restaurant_service.dart';
 
 void main() {
@@ -20,10 +19,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) =>
               RestaurantsProvider(restaurantService: RestaurantService()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) =>
-              SearchRestaurantsProvider(restaurantService: RestaurantService()),
         ),
       ],
       child: MaterialApp(
