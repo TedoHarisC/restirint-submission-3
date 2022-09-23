@@ -47,29 +47,19 @@ class _HomePageState extends State<HomePage> {
           if (query == "") {
             List<LocalRestaurant> result = state.restaurants.restaurants;
 
-            return Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: result.length,
-                itemBuilder: (context, index) {
-                  return RestaurantTile(dataRestaurant: result[index]);
-                },
-              ),
+            return Column(
+              children: result.map((item) {
+                return RestaurantTile(dataRestaurant: item);
+              }).toList(),
             );
           } else {
             List<LocalRestaurant> resultSearch =
                 state.searchResultRestaurant.restaurants;
 
-            return Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: resultSearch.length,
-                itemBuilder: (context, index) {
-                  return RestaurantTile(dataRestaurant: resultSearch[index]);
-                },
-              ),
+            return Column(
+              children: resultSearch.map((item) {
+                return RestaurantTile(dataRestaurant: item);
+              }).toList(),
             );
           }
         } else if (state.state == ResultState.error) {
@@ -122,15 +112,10 @@ class _HomePageState extends State<HomePage> {
           } else if (state.state == ResultState.hasData) {
             List<LocalRestaurant> resultSearch = state.restaurants.restaurants;
 
-            return Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: resultSearch.length,
-                itemBuilder: (context, index) {
-                  return RestaurantTile(dataRestaurant: resultSearch[index]);
-                },
-              ),
+            return Column(
+              children: resultSearch.map((item) {
+                return RestaurantTile(dataRestaurant: item);
+              }).toList(),
             );
           } else if (state.state == ResultState.error) {
             return Center(
@@ -253,7 +238,6 @@ class _HomePageState extends State<HomePage> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 2,
             padding: EdgeInsets.all(halfMargin),
             child: Column(
               children: [
