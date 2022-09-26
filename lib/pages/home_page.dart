@@ -4,6 +4,7 @@ import 'package:restirint/model/local_restaurant.dart';
 import 'package:restirint/providers/restaurant_provider.dart';
 import 'package:restirint/services/restaurant_service.dart';
 import 'package:restirint/theme.dart';
+import 'package:restirint/widgets/bottom_nav_bar.dart';
 import 'package:restirint/widgets/restaurant_tile.dart';
 import 'package:restirint/widgets/search_tile.dart';
 import 'package:restirint/widgets/shimmer/list_skeleton_item.dart';
@@ -267,6 +268,9 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: content(),
+      ),
+      bottomNavigationBar: const BottomNavBar(
+        selected: "home",
       ),
     );
   }

@@ -38,7 +38,8 @@ class DbHelper {
 
   Future<void> insertFavoriteRestaurant(LocalRestaurant restaurant) async {
     final Database db = await database;
-    await db.insert(_tableFavoriteRestaurant, restaurant.toJsonForSql());
+    await db.insert(_tableFavoriteRestaurant, restaurant.toJsonForSql(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> deleteFavoriteRestaurant(LocalRestaurant restaurant) async {
@@ -72,8 +73,9 @@ class DbHelper {
         results.map((item) => LocalRestaurant.fromJson(item)).toList();
     bool status = false;
     for (var i = 0; i < list.length; i++) {
+      //print('dari db helper' + list[i].id);
       if (list[i].id == id) {
-        return true;
+        status = true;
       } else {
         status = false;
       }

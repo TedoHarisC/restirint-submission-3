@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restirint/model/detail_restaurant.dart';
 import 'package:restirint/model/local_restaurant.dart';
 import 'package:restirint/pages/form_tambah_review.dart';
+import 'package:restirint/providers/favorite_restaurant_provider.dart';
 import 'package:restirint/providers/restaurant_provider.dart';
 import 'package:restirint/services/restaurant_service.dart';
 import 'package:restirint/theme.dart';
@@ -23,6 +24,25 @@ class DetailRestaurantPage extends StatefulWidget {
 
 class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
   bool isExpand = false;
+  late bool isFavorite;
+
+  Future<bool> checkIsFavouriteRestaurant(String id) async {
+    bool result =
+        await Provider.of<FavoriteRestaurantProvider>(context, listen: false)
+            .getFavouriteRestaurantById(widget.dataRestaurant.id);
+
+    setState(() {
+      isFavorite = result;
+    });
+
+    return result;
+  }
+
+  @override
+  void initState() {
+    checkIsFavouriteRestaurant(widget.dataRestaurant.id);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +70,36 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              if (isFavorite) {
+                Provider.of<FavoriteRestaurantProvider>(context, listen: false)
+                    .deleteFavoriteRestaurant(widget.dataRestaurant);
+              } else {
+                Provider.of<FavoriteRestaurantProvider>(context, listen: false)
+                    .addFavouriteRestaurant(widget.dataRestaurant);
+              }
+
+              setState(() {
+                checkIsFavouriteRestaurant(widget.dataRestaurant.id);
+              });
             },
-            child: Container(
-              width: 60,
-              margin: EdgeInsets.symmetric(
-                vertical: 30,
-                horizontal: defaultMargin,
-              ),
-              padding: const EdgeInsets.all(10),
-              child: Image.asset(
-                'assets/icon_wishlist.png',
-              ),
-            ),
+            child: Consumer<FavoriteRestaurantProvider>(
+                builder: (context, state, _) {
+              return Container(
+                width: 60,
+                margin: EdgeInsets.symmetric(
+                  vertical: 30,
+                  horizontal: defaultMargin,
+                ),
+                padding: const EdgeInsets.all(10),
+                child: (state.state == ResultFavoriteState.isFavorite)
+                    ? Image.asset(
+                        'assets/icon_wishlist.png',
+                      )
+                    : Image.asset(
+                        'assets/icon_wishlist_nonaktif.png',
+                      ),
+              );
+            }),
           ),
         ],
       );

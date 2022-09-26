@@ -6,7 +6,7 @@ import 'package:restirint/utils/config.dart';
 class LocalRestaurant {
   final String id;
   final String name;
-  final String description;
+  final String? description;
   final String pictureId;
   final String city;
   final num rating;
@@ -25,7 +25,7 @@ class LocalRestaurant {
   factory LocalRestaurant.fromJson(restaurant) => LocalRestaurant(
         id: restaurant['id'],
         name: restaurant['name'],
-        description: restaurant['description'],
+        description: restaurant['description'] ?? '',
         pictureId: restaurant['pictureId'],
         city: restaurant['city'],
         rating: restaurant['rating'],
