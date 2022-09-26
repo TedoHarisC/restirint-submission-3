@@ -37,6 +37,16 @@ class LocalRestaurant {
   String getSmallResolutionPicture() => smallResolutionUrl + pictureId;
   String getMediumResolutionPicture() => mediumResolutionUrl + pictureId;
   String getLargeResolutionPicture() => largeResolutionUrl + pictureId;
+
+  Map<String, dynamic> toJsonForSql() {
+    return {
+      'id': id,
+      'name': name,
+      'pictureId': pictureId,
+      'city': city,
+      'rating': rating,
+    };
+  }
 }
 
 List<LocalRestaurant> parseRestaurants(json) {
