@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:restirint/model/customer_review.dart';
 import 'package:restirint/model/detail_restaurant.dart';
@@ -71,6 +72,21 @@ class RestaurantService {
       }
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<LocalRestaurant> getRandomRestaurant() async {
+    final response = await http.get(Uri.parse("${baseAPIUrl}list"));
+    if (response.statusCode == 200) {
+      final random = Random();
+      List<LocalRestaurant> listRestaurant =
+          ResponseLocalRestaurant.fromJson(json.decode(response.body))
+              .restaurants;
+      LocalRestaurant restaurant =
+          listRestaurant[random.nextInt(listRestaurant.length)];
+      return restaurant;
+    } else {
+      throw Exception('Failed Load List Restaurant');
     }
   }
 }

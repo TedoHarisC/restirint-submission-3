@@ -73,9 +73,25 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
               if (isFavorite) {
                 Provider.of<FavoriteRestaurantProvider>(context, listen: false)
                     .deleteFavoriteRestaurant(widget.dataRestaurant);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: kRedColor,
+                    content: const Text(
+                        'Restaurant berhasil di hapus dari favourite'),
+                  ),
+                );
               } else {
                 Provider.of<FavoriteRestaurantProvider>(context, listen: false)
                     .addFavouriteRestaurant(widget.dataRestaurant);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: kGreenColor,
+                    content: const Text(
+                        'Restaurant berhasil di tambahkan ke favourite'),
+                  ),
+                );
               }
 
               setState(() {

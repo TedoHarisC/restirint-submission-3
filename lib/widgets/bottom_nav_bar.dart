@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restirint/pages/favourite_restaurant_page.dart';
 import 'package:restirint/pages/home_page.dart';
+import 'package:restirint/pages/setting_page.dart';
 import 'package:restirint/theme.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -35,6 +36,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
           context,
           MaterialPageRoute(
             builder: (context) => const FavouriteRestaurantPage(),
+          ),
+        );
+      } else if (_selectedNavbar == 2) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SettingPage(),
           ),
         );
       }
@@ -87,6 +95,20 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       )
                     : Image.asset(
                         'assets/icon_menu_favorite.png',
+                        width: 22,
+                        height: 22,
+                      ),
+                label: "",
+              ),
+              BottomNavigationBarItem(
+                icon: (widget.selected == "setting")
+                    ? Image.asset(
+                        'assets/icon_menu_setting_active.png',
+                        width: 22,
+                        height: 22,
+                      )
+                    : Image.asset(
+                        'assets/icon_menu_setting.png',
                         width: 22,
                         height: 22,
                       ),
