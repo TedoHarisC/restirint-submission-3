@@ -4,22 +4,18 @@ import 'package:restirint/providers/restaurant_provider.dart';
 import 'package:restirint/theme.dart';
 import 'package:restirint/widgets/general_button.dart';
 
-class FormTambahReview extends StatefulWidget {
+class FormTambahReview extends StatelessWidget {
   final String idRestaurant;
   final RestaurantsProvider provider;
 
-  const FormTambahReview({
+  FormTambahReview({
     super.key,
     required this.idRestaurant,
     required this.provider,
   });
 
-  @override
-  State<FormTambahReview> createState() => _FormTambahReviewState();
-}
-
-class _FormTambahReviewState extends State<FormTambahReview> {
   final TextEditingController _namaController = TextEditingController(text: '');
+
   final TextEditingController _reviewController =
       TextEditingController(text: '');
 
@@ -27,7 +23,7 @@ class _FormTambahReviewState extends State<FormTambahReview> {
   Widget build(BuildContext context) {
     PreferredSize header() {
       return PreferredSize(
-        // ignore: sort_child_properties_last
+        preferredSize: const Size.fromHeight(70),
         child: AppBar(
           backgroundColor: kPrimaryColor,
           centerTitle: true,
@@ -43,7 +39,6 @@ class _FormTambahReviewState extends State<FormTambahReview> {
             ],
           ),
         ),
-        preferredSize: const Size.fromHeight(70),
       );
     }
 
@@ -108,12 +103,12 @@ class _FormTambahReviewState extends State<FormTambahReview> {
         return GestureDetector(
           onTap: () {
             CustomerReview customerReview = CustomerReview(
-              id: widget.idRestaurant,
+              id: idRestaurant,
               name: _namaController.text,
               review: _reviewController.text,
             );
 
-            widget.provider.postReview(customerReview).then((value) {
+            provider.postReview(customerReview).then((value) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   backgroundColor: kGreenColor,

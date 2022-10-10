@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restirint/model/detail_restaurant.dart';
 import 'package:restirint/model/local_restaurant.dart';
+import 'package:restirint/pages/favourite_restaurant_page.dart';
 import 'package:restirint/pages/form_tambah_review.dart';
 import 'package:restirint/providers/favorite_restaurant_provider.dart';
 import 'package:restirint/providers/restaurant_provider.dart';
@@ -12,10 +13,12 @@ import 'package:restirint/widgets/review_tile.dart';
 
 class DetailRestaurantPage extends StatefulWidget {
   final LocalRestaurant dataRestaurant;
+  final bool isFavouritePage;
 
   const DetailRestaurantPage({
     Key? key,
     required this.dataRestaurant,
+    required this.isFavouritePage,
   }) : super(key: key);
 
   @override
@@ -54,7 +57,14 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              (!widget.isFavouritePage)
+                  ? Navigator.pop(context)
+                  : Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FavouriteRestaurantPage(),
+                      ),
+                    );
             },
             child: Container(
               width: 60,

@@ -3,28 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:restirint/theme.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatelessWidget {
   const SplashPage({Key? key}) : super(key: key);
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
-}
-
-class _SplashPageState extends State<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-
+  Widget build(BuildContext context) {
     Timer(
       const Duration(seconds: 5),
       () async {
         Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
       },
     );
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kOrangeColor,
       body: Center(

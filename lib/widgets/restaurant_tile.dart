@@ -5,10 +5,12 @@ import 'package:restirint/theme.dart';
 
 class RestaurantTile extends StatelessWidget {
   final LocalRestaurant dataRestaurant;
+  final bool isFavouritePage;
 
   const RestaurantTile({
     Key? key,
     required this.dataRestaurant,
+    required this.isFavouritePage,
   }) : super(key: key);
 
   @override
@@ -21,6 +23,7 @@ class RestaurantTile extends StatelessWidget {
             transitionDuration: const Duration(seconds: 1),
             pageBuilder: (_, __, ___) => DetailRestaurantPage(
               dataRestaurant: dataRestaurant,
+              isFavouritePage: isFavouritePage,
             ),
           ),
         );

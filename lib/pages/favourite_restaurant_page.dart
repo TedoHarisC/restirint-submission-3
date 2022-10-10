@@ -16,74 +16,99 @@ class FavouriteRestaurantPage extends StatefulWidget {
 }
 
 class _FavouriteRestaurantPageState extends State<FavouriteRestaurantPage> {
-  @override
-  void initState() {
-    super.initState();
+  Widget listFavouriteRestaurantStream = Container();
+
+  Widget placeholderWhenLoading() {
+    return Column(
+      children: const [
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+        ListSkeletonItem(),
+        SizedBox(height: 20),
+      ],
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Widget placeholderWhenLoading() {
-      return Column(
-        children: const [
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-          ListSkeletonItem(),
-          SizedBox(height: 20),
-        ],
-      );
-    }
+  Widget listAllFavouriteRestaurantStream() {
+    return ChangeNotifierProvider(
+      create: (_) => FavoriteRestaurantProvider().getAllFavouriteRestaurant(),
+      child: Consumer<FavoriteRestaurantProvider>(
+        builder: (context, state, _) {
+          if (state.state == ResultFavoriteState.loading) {
+            return placeholderWhenLoading();
+          } else if (state.state == ResultFavoriteState.hasData) {
+            List<LocalRestaurant> resultSearch = state.result;
 
-    Widget listAllFavouriteRestaurantStream() {
-      return ChangeNotifierProvider(
-        create: (_) => FavoriteRestaurantProvider().getAllFavouriteRestaurant(),
-        child: Consumer<FavoriteRestaurantProvider>(
-          builder: (context, state, _) {
-            if (state.state == ResultFavoriteState.loading) {
-              return placeholderWhenLoading();
-            } else if (state.state == ResultFavoriteState.hasData) {
-              List<LocalRestaurant> resultSearch = state.result;
-
-              return Column(
-                children: resultSearch.map((item) {
-                  return RestaurantTile(dataRestaurant: item);
-                }).toList(),
-              );
-            } else if (state.state == ResultFavoriteState.error) {
-              return Center(
-                child: Text(
-                  state.message,
-                  style: blackTextStyle.copyWith(
-                    fontSize: 12,
-                    fontWeight: semiBold,
-                  ),
-                  textAlign: TextAlign.center,
+            return Column(
+              children: resultSearch.map((item) {
+                return RestaurantTile(
+                  dataRestaurant: item,
+                  isFavouritePage: true,
+                );
+              }).toList(),
+            );
+          } else if (state.state == ResultFavoriteState.error) {
+            return Center(
+              child: Text(
+                state.message,
+                style: blackTextStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: semiBold,
                 ),
-              );
-            } else if (state.state == ResultFavoriteState.noData) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Image.asset(
-                      'assets/img_no_favourite_content.png',
-                      width: 299,
-                      height: 299,
-                    ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else if (state.state == ResultFavoriteState.noData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: Image.asset(
+                    'assets/img_no_favourite_content.png',
+                    width: 299,
+                    height: 299,
                   ),
-                  const SizedBox(height: 20),
-                  Center(
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    'Belum ada data restaurant yang jadi favourite kamu nih, \nYuk mulai tambahkan dengan menekan tombol like di Halaman Detail Restaurant.',
+                    style: blackTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: regular,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: Image.asset(
+                    'assets/img_no_favourite_content.png',
+                    width: 299,
+                    height: 299,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.center,
+                  child: Center(
                     child: Text(
-                      'Belum ada data restaurant yang jadi favourite kamu nih, \nYuk mulai tambahkan dengan menekan tombol like di Halaman Detail Restaurant.',
+                      'Belum ada data restaurant yang tersedia',
                       style: blackTextStyle.copyWith(
                         fontSize: 14,
                         fontWeight: regular,
@@ -91,42 +116,23 @@ class _FavouriteRestaurantPageState extends State<FavouriteRestaurantPage> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                ],
-              );
-            } else {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Image.asset(
-                      'assets/img_no_favourite_content.png',
-                      width: 299,
-                      height: 299,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Center(
-                      child: Text(
-                        'Belum ada data restaurant yang tersedia',
-                        style: blackTextStyle.copyWith(
-                          fontSize: 14,
-                          fontWeight: regular,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
-        ),
-      );
-    }
+                ),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
 
+  @override
+  void initState() {
+    listFavouriteRestaurantStream = listAllFavouriteRestaurantStream();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget content() {
       return SafeArea(
         child: RefreshIndicator(
@@ -148,7 +154,7 @@ class _FavouriteRestaurantPageState extends State<FavouriteRestaurantPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 30),
-                  listAllFavouriteRestaurantStream(),
+                  listFavouriteRestaurantStream,
                 ],
               ),
             ),

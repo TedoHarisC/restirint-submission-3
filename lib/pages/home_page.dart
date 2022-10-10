@@ -50,7 +50,10 @@ class _HomePageState extends State<HomePage> {
 
             return Column(
               children: result.map((item) {
-                return RestaurantTile(dataRestaurant: item);
+                return RestaurantTile(
+                  dataRestaurant: item,
+                  isFavouritePage: false,
+                );
               }).toList(),
             );
           } else {
@@ -59,7 +62,10 @@ class _HomePageState extends State<HomePage> {
 
             return Column(
               children: resultSearch.map((item) {
-                return RestaurantTile(dataRestaurant: item);
+                return RestaurantTile(
+                  dataRestaurant: item,
+                  isFavouritePage: false,
+                );
               }).toList(),
             );
           }
@@ -115,7 +121,10 @@ class _HomePageState extends State<HomePage> {
 
             return Column(
               children: resultSearch.map((item) {
-                return RestaurantTile(dataRestaurant: item);
+                return RestaurantTile(
+                  dataRestaurant: item,
+                  isFavouritePage: false,
+                );
               }).toList(),
             );
           } else if (state.state == ResultState.error) {
