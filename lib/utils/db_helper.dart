@@ -66,20 +66,8 @@ class DbHelper {
 
   Future<bool> checkFavoriteStatus(String id) async {
     final Database db = await database;
-    List<Map<String, dynamic>> results =
-        await db.query(_tableFavoriteRestaurant);
-
-    List<LocalRestaurant> list =
-        results.map((item) => LocalRestaurant.fromJson(item)).toList();
-    bool status = false;
-    for (var i = 0; i < list.length; i++) {
-      //print('dari db helper' + list[i].id);
-      if (list[i].id == id) {
-        status = true;
-      } else {
-        status = false;
-      }
-    }
-    return status;
+    var query =
+        "SELECT COUNT(*) FROM $_tableFavoriteRestaurant WHERE ID = '$id'";
+    return Sqflite.firstIntValue(await db.rawQuery(query)) == 1;
   }
 }
